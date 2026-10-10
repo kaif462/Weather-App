@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${page != null} ? ${page.city} + ' weather' : 'Weather'">Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body th:attr="data-theme=${theme}, data-city=${page != null} ? ${page.city} : ''">
+  <div class="page">
+
+    <form id="search-form" class="bar" method="get" th:action="@{/}" autocomplete="off">
+      <div class="search">
+        <label class="sr-only" for="city">City</label>
+        <input id="city" name="city" type="search" placeholder="Search for a city" th:value="${city}" required>
+        <button class="go" type="submit">Get forecast</button>
+      </div>
+
+      <div class="controls">
+        <fieldset class="seg">
+          <legend class="sr-only">Forecast length</legend>
+          <label th:each="n : ${dayOptions}">
+            <input type="radio" name="days" th:value="${n}" th:checked="${n == days}">
+            <span th:text="${n} + ' days'">3 days</span>
+          </label>
+        </fieldset>
+        <fieldset class="seg">
+          <legend class="sr-only">Temperature unit</legend>
+          <label>
+            <input type="radio" name="unit" value="C" th:checked="${unit == 'C'}">
+            <span>°C</span>
+          </label>
+          <label>
+            <input type="radio" name="unit" value="F" th:checked="${unit == 'F'}">
+            <span>°F</span>
+          </label>
+        </fieldset>
+      </div>
+    </form>
+
+    <div id="recent" class="chips" aria-label="Recent searches"></div>
+
+    <main id="result" aria-live="polite">
+
+      <!-- Result -->
+      <th:block th:if="${page != null}">
+        <section class="hero">
+          <div class="place">
+            <h1 th:text="${page.city}">City</h1>
+            <p class="where" th:text="${page.where}">Region, Country</p>
+            <p class="temp">
+              <span class="num" th:text="${page.temp}">24</span><span class="unit" th:text="'°' + ${page.unit}">°C</span>
+            </p>
+            <p class="cond" th:text="${page.condition}">Sunny</p>
+          </div>
+          <th:block th:replace="~{fragments/icons :: weather(${page.theme})}"></th:block>
+        </section>
+
+        <section class="forecast" th:if="${!page.days.isEmpty()}">
+          <h2 th:text="'Next ' + ${page.days.size()} + (${page.days.size()} == 1 ? ' day' : ' days')">Next 3 days</h2>
+          <p class="hint">Each bar runs from the day's low to its high. The tick marks the average.</p>
+          <ol class="days">
+            <li class="day" th:each="r, it : ${page.days}">
+              <span class="when" th:text="${r.label}">Today</span>
+              <span class="lo" th:text="${r.lo} + '°'">18°</span>
+              <div class="track" role="img"
+                   th:aria-label="|Low ${r.lo}, average ${r.avg}, high ${r.hi} degrees|">
+                <div class="fill"
+                     th:style="'--i:' + ${it.index} + ';left:' + ${r.left} + '%;width:' + ${r.width} + '%;background:linear-gradient(90deg,' + ${r.from} + ',' + ${r.to} + ')'"></div>
+                <div class="tick" th:style="'left:' + ${r.tick} + '%'"></div>
+              </div>
+              <span class="hi" th:text="${r.hi} + '°'">28°</span>
+            </li>
+          </ol>
+        </section>
+      </th:block>
+
+      <!-- Errors -->
+      <section class="status" th:if="${error != null}" th:switch="${error}">
+        <th:block th:case="'notFound'">
+          <strong th:text="|We couldn't find &quot;${city}&quot;|">We couldn't find that city</strong>
+          Check the spelling, or try a nearby larger city.
+        </th:block>
+        <th:block th:case="*">
+          <strong>We couldn't load the weather</strong>
+          The weather service didn't respond. Try again in a moment.
+        </th:block>
+      </section>
+
+      <!-- Empty -->
+      <section class="empty" th:if="${page == null and error == null}">
+        <h1>What's the weather like?</h1>
+        <p>Search for a city to see the temperature right now and the days ahead.</p>
+        <div class="chips">
+          <a class="chip" th:each="s : ${suggestions}" th:text="${s}"
+             th:href="@{/(city=${s}, days=${days}, unit=${unit})}">Delhi</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

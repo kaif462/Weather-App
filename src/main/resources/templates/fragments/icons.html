@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Usage: th:replace="~{fragments/icons :: weather(${page.theme})}" -->
+<svg th:fragment="weather(kind)" class="icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
+     stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <g th:switch="${kind}">
+
+    <g th:case="'sun'" class="hot">
+      <circle cx="32" cy="32" r="10"/>
+      <path d="M46 32H53M41.9 41.9L46.85 46.85M32 46V53M22.1 41.9L17.15 46.85M18 32H11M22.1 22.1L17.15 17.15M32 18V11M41.9 22.1L46.85 17.15"/>
+    </g>
+
+    <g th:case="'partly'">
+      <g class="hot">
+        <circle cx="24" cy="24" r="7"/>
+        <path d="M35 24H40M31.78 31.78L35.31 35.31M24 35V40M16.22 31.78L12.69 35.31M13 24H8M16.22 16.22L12.69 12.69M24 13V8M31.78 16.22L35.31 12.69"/>
+      </g>
+      <path transform="translate(8 8) scale(.86)" fill="var(--bg)"
+            d="M20 44H46A9 9 0 0 0 47.2 26.1A14 14 0 0 0 20.2 29A8 8 0 0 0 20 44Z"/>
+    </g>
+
+    <g th:case="'rain'">
+      <path d="M20 44H46A9 9 0 0 0 47.2 26.1A14 14 0 0 0 20.2 29A8 8 0 0 0 20 44Z"/>
+      <path d="M24 50l-3 7M34 50l-3 7M44 50l-3 7"/>
+    </g>
+
+    <g th:case="'snow'">
+      <path d="M20 44H46A9 9 0 0 0 47.2 26.1A14 14 0 0 0 20.2 29A8 8 0 0 0 20 44Z"/>
+      <path d="M24 52v.1M34 56v.1M44 52v.1" stroke-width="4"/>
+    </g>
+
+    <g th:case="'thunder'">
+      <path d="M20 44H46A9 9 0 0 0 47.2 26.1A14 14 0 0 0 20.2 29A8 8 0 0 0 20 44Z"/>
+      <path class="hot" d="M35 44l-6 9h8l-5 9"/>
+    </g>
+
+    <g th:case="'mist'">
+      <path d="M12 24h40M8 34h44M16 44h36M22 54h26"/>
+    </g>
+
+    <g th:case="*">
+      <path d="M20 44H46A9 9 0 0 0 47.2 26.1A14 14 0 0 0 20.2 29A8 8 0 0 0 20 44Z"/>
+    </g>
+  </g>
+</svg>
+</body>
+</html>
